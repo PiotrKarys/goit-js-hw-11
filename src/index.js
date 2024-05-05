@@ -6,7 +6,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 const form = document.getElementById('search-form');
 const input = form.querySelector('[name="searchQuery"]');
 const gallery = document.getElementById('gallery');
-const loadMoreBtn = document.getElementById('load-more');
+// const loadMoreBtn = document.getElementById('load-more');
 
 let currentPage = 1;
 
@@ -21,10 +21,10 @@ form.addEventListener('submit', async function (ev) {
   }
 });
 
-loadMoreBtn.addEventListener('click', async function () {
-  currentPage++;
-  await fetchImages(input.value.trim());
-});
+// loadMoreBtn.addEventListener('click', async function () {
+//   currentPage++;
+//   await fetchImages(input.value.trim());
+// });
 
 async function fetchImages(query) {
   const apiUrl = 'https://pixabay.com/api/';
@@ -99,14 +99,27 @@ function displayImages(images) {
     gallery.appendChild(photoCard);
   });
   const lightbox = new SimpleLightbox('.photo-card a');
-}
-window.addEventListener('scroll', function () {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  const bottomOffset = 450;
+  lightbox.on('open.simplelightbox', function () {
+    lightbox.refresh();
+  });
+  // window.addEventListener('scroll', function () {
+  //   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+  //   const bottomOffset = 450;
 
-  if (scrollTop + clientHeight >= scrollHeight - bottomOffset) {
-    loadMoreBtn.classList.remove('hidden');
-  } else {
-    loadMoreBtn.classList.add('hidden');
-  }
-});
+  //   if (scrollTop + clientHeight >= scrollHeight - bottomOffset) {
+  //     loadMoreBtn.classList.remove('hidden');
+  //   } else {
+  //     loadMoreBtn.classList.add('hidden');
+  //   }
+  // });
+  window.addEventListener('scroll', async function () {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const bottomOffset = 350;
+
+    if (scrollTop + clientHeight >= scrollHeight - bottomOffset) {
+      currentPage++;
+      await fetchImages(input.value.trim());
+      lightbox.refresh();
+    }
+  });
+}
