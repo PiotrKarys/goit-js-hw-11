@@ -5,7 +5,6 @@ const form = document.getElementById('search-form');
 const input = form.querySelector('[name="searchQuery"]');
 const gallery = document.getElementById('gallery');
 const loadMoreBtn = document.getElementById('load-more');
-loadMoreBtn.classList.add('hidden');
 
 let currentPage = 1;
 
@@ -59,15 +58,6 @@ async function fetchImages(query) {
         Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
       }
     }
-
-    if (currentPage * perPage >= totalHits) {
-      loadMoreBtn.classList.remove('hidden');
-      Notiflix.Notify.info(
-        "We're sorry, but you've reached the end of search results."
-      );
-    } else {
-      loadMoreBtn.classList.add('hidden');
-    }
   } catch (error) {
     console.error('Error fetching images:', error);
     Notiflix.Notify.failure(
@@ -106,7 +96,7 @@ function displayImages(images) {
 }
 window.addEventListener('scroll', function () {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  const bottomOffset = 250;
+  const bottomOffset = 450;
 
   if (scrollTop + clientHeight >= scrollHeight - bottomOffset) {
     loadMoreBtn.classList.remove('hidden');
