@@ -4,6 +4,7 @@ import Notiflix from 'notiflix';
 const form = document.getElementById('search-form');
 const input = form.querySelector('[name="searchQuery"]');
 const gallery = document.getElementById('gallery');
+const loadMoreBtn = document.getElementById('load-more');
 
 let currentPage = 1;
 
@@ -12,10 +13,16 @@ form.addEventListener('submit', async function (ev) {
   const searchQuery = input.value.trim();
   if (searchQuery) {
     currentPage = 1;
+    loadMoreBtn.classList.remove('hidden');
     await fetchImages(searchQuery);
   } else {
     Notiflix.Notify.info('Please fill the form');
   }
+});
+
+loadMoreBtn.addEventListener('click', async function () {
+  currentPage++;
+  await fetchImages(input.value.trim());
 });
 
 async function fetchImages(query) {
@@ -32,8 +39,22 @@ async function fetchImages(query) {
 
   try {
     const response = await axios.get(apiUrl, { params });
-    const images = response.data.hits;
-    displayImages(images);
+    const ImageData = response.data.hits.map(image => ({
+      webformatURL: image.webformatURL,
+      largeImageURL: image.largeImageURL,
+      tags: image.tags,
+      likes: image.likes,
+      views: image.views,
+      comments: image.comments,
+      downloads: image.downloads,
+    }));
+    if (ImageData.length === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    } else {
+      displayImages(ImageData);
+    }
   } catch (error) {
     console.error('Error fetching images:', error);
     Notiflix.Notify.failure(
@@ -48,17 +69,25 @@ function displayImages(images) {
   }
 
   images.forEach(image => {
-    const imageElement = document.createElement('img');
-    imageElement.src = image.webformatURL;
-    imageElement.alt = image.tags;
-    gallery.appendChild(imageElement);
+    const photoCard = document.createElement('div');
+    photoCard.classList.add('photo-card');
+    photoCard.innerHTML = `
+      <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
+      <div class="info">
+        <p class="info-item"><b>Likes:</b> ${image.likes}</p>
+        <p class="info-item"><b>Views:</b> ${image.views}</p>
+        <p class="info-item"><b>Comments:</b> ${image.comments}</p>
+        <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
+      </div>
+    `;
+    gallery.appendChild(photoCard);
   });
 }
 
-window.addEventListener('scroll', function () {
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
-    currentPage++;
-    fetchImages(input.value.trim());
-  }
-});
+// window.addEventListener('scroll', function () {
+//   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+//   if (scrollTop + clientHeight >= scrollHeight - 5) {
+//     currentPage++;
+//     fetchImages(input.value.trim());
+//   }
+// });
