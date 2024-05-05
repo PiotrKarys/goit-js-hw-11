@@ -13,7 +13,7 @@ form.addEventListener('submit', async function (ev) {
   const searchQuery = input.value.trim();
   if (searchQuery) {
     currentPage = 1;
-    loadMoreBtn.classList.remove('hidden');
+    loadMoreBtn.classList.add('hidden');
     await fetchImages(searchQuery);
   } else {
     Notiflix.Notify.info('Please fill the form');
@@ -39,6 +39,7 @@ async function fetchImages(query) {
 
   try {
     const response = await axios.get(apiUrl, { params });
+    const totalHits = response.data.totalHits;
     const ImageData = response.data.hits.map(image => ({
       webformatURL: image.webformatURL,
       largeImageURL: image.largeImageURL,
@@ -54,6 +55,18 @@ async function fetchImages(query) {
       );
     } else {
       displayImages(ImageData);
+      if (currentPage === 1) {
+        Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+      }
+    }
+
+    if (currentPage * perPage >= totalHits) {
+      loadMoreBtn.classList.add('hidden');
+      Notiflix.Notify.info(
+        "We're sorry, but you've reached the end of search results."
+      );
+    } else {
+      loadMoreBtn.classList.remove('hidden');
     }
   } catch (error) {
     console.error('Error fetching images:', error);
