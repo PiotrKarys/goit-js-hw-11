@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const form = document.getElementById('search-form');
 const input = form.querySelector('[name="searchQuery"]');
@@ -79,7 +81,10 @@ function displayImages(images) {
     img.src = image.webformatURL;
     img.alt = image.tags;
     img.loading = 'lazy';
-    photoCard.appendChild(img);
+    const link = document.createElement('a');
+    link.href = image.largeImageURL;
+    link.appendChild(img);
+    photoCard.appendChild(link);
 
     const infoDiv = document.createElement('div');
     infoDiv.classList.add('info', `info-${index}`);
@@ -93,6 +98,7 @@ function displayImages(images) {
 
     gallery.appendChild(photoCard);
   });
+  const lightbox = new SimpleLightbox('.photo-card a');
 }
 window.addEventListener('scroll', function () {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
