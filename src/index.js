@@ -5,6 +5,7 @@ const form = document.getElementById('search-form');
 const input = form.querySelector('[name="searchQuery"]');
 const gallery = document.getElementById('gallery');
 const loadMoreBtn = document.getElementById('load-more');
+loadMoreBtn.classList.add('hidden');
 
 let currentPage = 1;
 
@@ -13,7 +14,6 @@ form.addEventListener('submit', async function (ev) {
   const searchQuery = input.value.trim();
   if (searchQuery) {
     currentPage = 1;
-    loadMoreBtn.classList.add('hidden');
     await fetchImages(searchQuery);
   } else {
     Notiflix.Notify.info('Please fill the form');
@@ -61,12 +61,12 @@ async function fetchImages(query) {
     }
 
     if (currentPage * perPage >= totalHits) {
-      loadMoreBtn.classList.add('hidden');
+      loadMoreBtn.classList.remove('hidden');
       Notiflix.Notify.info(
         "We're sorry, but you've reached the end of search results."
       );
     } else {
-      loadMoreBtn.classList.remove('hidden');
+      loadMoreBtn.classList.add('hidden');
     }
   } catch (error) {
     console.error('Error fetching images:', error);
@@ -81,26 +81,36 @@ function displayImages(images) {
     gallery.innerHTML = '';
   }
 
-  images.forEach(image => {
+  images.forEach((image, index) => {
     const photoCard = document.createElement('div');
     photoCard.classList.add('photo-card');
-    photoCard.innerHTML = `
-      <img src="${image.webformatURL}" alt="${image.tags}" loading="lazy" />
-      <div class="info">
-        <p class="info-item"><b>Likes:</b> ${image.likes}</p>
-        <p class="info-item"><b>Views:</b> ${image.views}</p>
-        <p class="info-item"><b>Comments:</b> ${image.comments}</p>
-        <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
-      </div>
+
+    const img = document.createElement('img');
+    img.src = image.webformatURL;
+    img.alt = image.tags;
+    img.loading = 'lazy';
+    photoCard.appendChild(img);
+
+    const infoDiv = document.createElement('div');
+    infoDiv.classList.add('info', `info-${index}`);
+    infoDiv.innerHTML = `
+      <p class="info-item"><b>Likes:</b> ${image.likes}</p>
+      <p class="info-item"><b>Views:</b> ${image.views}</p>
+      <p class="info-item"><b>Comments:</b> ${image.comments}</p>
+      <p class="info-item"><b>Downloads:</b> ${image.downloads}</p>
     `;
+    photoCard.appendChild(infoDiv);
+
     gallery.appendChild(photoCard);
   });
 }
+window.addEventListener('scroll', function () {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+  const bottomOffset = 250;
 
-// window.addEventListener('scroll', function () {
-//   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-//   if (scrollTop + clientHeight >= scrollHeight - 5) {
-//     currentPage++;
-//     fetchImages(input.value.trim());
-//   }
-// });
+  if (scrollTop + clientHeight >= scrollHeight - bottomOffset) {
+    loadMoreBtn.classList.remove('hidden');
+  } else {
+    loadMoreBtn.classList.add('hidden');
+  }
+});
