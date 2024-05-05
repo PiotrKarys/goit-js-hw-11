@@ -1,11 +1,12 @@
 .hidden {
   display: none;
 }
+
 .search-form {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   background-color: #f4f4f4;
   padding: 20px;
   border-radius: 10px;
@@ -14,7 +15,8 @@
 }
 
 .search-form input[type='text'] {
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #ccc;
@@ -43,13 +45,14 @@
   justify-content: space-around;
   gap: 20px;
 }
+
 #gallery-container {
   position: relative;
 }
+
 .photo-card {
   position: relative;
   width: calc(25% - 25px);
-  border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 300px;
@@ -80,11 +83,12 @@
 .photo-card .info p {
   margin: 5px 0;
 }
+
 .bottom-button {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 0px;
+  bottom: 0;
   z-index: 999;
   background-color: rgba(0, 0, 0, 0.5);
   padding: 15px;
@@ -93,6 +97,7 @@
   width: 100%;
   text-align: center;
 }
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -101,6 +106,7 @@
     opacity: 1;
   }
 }
+
 .load-more {
   padding: 10px 20px;
   background-color: #007bff;
@@ -116,14 +122,15 @@
 .load-more:hover {
   background-color: #0056b3;
 }
-@media screen and (max-width: 768px) {
-  .photo-card {
-    width: calc(50% - 20px);
+
+@media screen and (min-width: 481px) {
+  .search-form {
+    width: 300px;
   }
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (min-width: 769px) {
   .photo-card {
-    width: calc(100% - 20px);
+    width: calc(33.33% - 20px);
   }
 }
